@@ -2,6 +2,7 @@ import 'package:cc/Controllers/audio_controller.dart';
 import 'package:cc/Controllers/image_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/public/flutter_sound_player.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
 class HomePage extends StatelessWidget {
@@ -48,10 +49,16 @@ class HomePage extends StatelessWidget {
               icon: const Icon(Icons.audio_file)),
           IconButton(
               onPressed: () async {
-                FlutterSoundPlayer player = FlutterSoundPlayer();
-                await player.openPlayer();
-                await player.startPlayer(
-                    fromURI: audioController.downloadUrl.value);
+                if (audioController.downloadUrl.value != '') {
+                  loading();
+                  FlutterSoundPlayer player = FlutterSoundPlayer();
+                  await player.openPlayer();
+                  await player.startPlayer(
+                      fromURI: audioController.downloadUrl.value);
+                  Get.close(1);
+                } else {
+                  Fluttertoast.showToast(msg: 'No audio');
+                }
               },
               icon: const Icon(Icons.play_arrow)),
         ],
