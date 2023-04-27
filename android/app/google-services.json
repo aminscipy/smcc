@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "188711042776",
+    "project_id": "smcc-21cb2",
+    "storage_bucket": "smcc-21cb2.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:188711042776:android:1135ce630ca4a88cfc21ad",
+        "android_client_info": {
+          "package_name": "com.cc.smcc"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "188711042776-61qjatcmapkrdpe5jt4bdkoei79fufp2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBpap6FFj0mlmo-RFHv-opjbFRs5xsfBGg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "188711042776-61qjatcmapkrdpe5jt4bdkoei79fufp2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
