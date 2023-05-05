@@ -1,33 +1,41 @@
 {
   "project_info": {
-    "project_number": "188711042776",
-    "project_id": "smcc-21cb2",
-    "storage_bucket": "smcc-21cb2.appspot.com"
+    "project_number": "753585510753",
+    "project_id": "cc-smcc",
+    "storage_bucket": "cc-smcc.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:188711042776:android:1135ce630ca4a88cfc21ad",
+        "mobilesdk_app_id": "1:753585510753:android:77c65616f50c9c321d0d20",
         "android_client_info": {
           "package_name": "com.cc.smcc"
         }
       },
       "oauth_client": [
         {
-          "client_id": "188711042776-61qjatcmapkrdpe5jt4bdkoei79fufp2.apps.googleusercontent.com",
+          "client_id": "753585510753-kjvuodgd88qsjgfj2e3jue5qcvcjcps3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.cc.smcc",
+            "certificate_hash": "cd29b5fac00080afd198b9ce8cc74088be939055"
+          }
+        },
+        {
+          "client_id": "753585510753-9me3a8bi8qcjf1d4nh86hsb33p9ikfjr.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBpap6FFj0mlmo-RFHv-opjbFRs5xsfBGg"
+          "current_key": "AIzaSyAZmg9wBNGzzCWhU8gutWn33DfKATivJfQ"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "188711042776-61qjatcmapkrdpe5jt4bdkoei79fufp2.apps.googleusercontent.com",
+              "client_id": "753585510753-9me3a8bi8qcjf1d4nh86hsb33p9ikfjr.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

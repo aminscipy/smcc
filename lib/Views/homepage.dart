@@ -1,5 +1,6 @@
 import 'package:cc/Controllers/audio_controller.dart';
 import 'package:cc/Controllers/image_controller.dart';
+import 'package:cc/Controllers/sign_in_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_sound/public/flutter_sound_player.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -12,9 +13,21 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     ImageController imageController = Get.put(ImageController());
     AudioController audioController = Get.put(AudioController());
+    SignInController signInController = Get.put(SignInController());
     return Scaffold(
       appBar: AppBar(
         title: const Text('SMCC'),
+        actions: [
+          PopupMenuButton(itemBuilder: (context) {
+            return [
+              PopupMenuItem(
+                  child: const Text('Log Out'),
+                  onTap: () {
+                    signInController.logOut();
+                  })
+            ];
+          })
+        ],
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -23,11 +36,10 @@ class HomePage extends StatelessWidget {
             padding: const EdgeInsets.all(5),
             child: Container(
               alignment: Alignment.center,
-              // color: Colors.black12,
               child: Obx(
                 () => Image.network(
                   imageController.postPic.value == ''
-                      ? 'https://firebasestorage.googleapis.com/v0/b/smcc-21cb2.appspot.com/o/image%2F21294.png?alt=media&token=229c6eb0-91eb-4e47-90f7-2f80f08f069f'
+                      ? 'https://firebasestorage.googleapis.com/v0/b/cc-smcc.appspot.com/o/monalisa.jpg?alt=media&token=128c3f04-9a92-477e-9cd5-ead4ccf647f0'
                       : imageController.postPic.value,
                   fit: BoxFit.fill,
                 ),
