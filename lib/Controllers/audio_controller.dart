@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:cc/Controllers/image_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -10,6 +11,7 @@ class AudioController extends GetxController {
   final downloadUrl = ''.obs;
 
   Future<void> uploadAudio() async {
+    loading();
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.audio,
       allowMultiple: false,
@@ -23,7 +25,7 @@ class AudioController extends GetxController {
 
       try {
         // Step 1: Upload the audio file to Firebase Storage
-        Reference ref = storage.ref().child('audio.mp3');
+        Reference ref = storage.ref().child('audio');
 
         UploadTask uploadTask = ref.putFile(file);
         TaskSnapshot taskSnapshot = await uploadTask;
@@ -38,5 +40,6 @@ class AudioController extends GetxController {
         debugPrint('Error: $error');
       }
     }
+    Get.close(1);
   }
 }

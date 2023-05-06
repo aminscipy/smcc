@@ -9,7 +9,11 @@ class SignIn extends StatelessWidget {
   Widget build(BuildContext context) {
     SignInController signInController = Get.put(SignInController());
     return Scaffold(
-      backgroundColor: Colors.black,
+      appBar: AppBar(
+        title: const Text(
+          'SMCC',
+        ),
+      ),
       body: Center(
           child: GestureDetector(
         onTap: () async {
@@ -26,7 +30,6 @@ class SignIn extends StatelessWidget {
             const SizedBox(height: 10),
             const Text(
               'Log In',
-              style: TextStyle(color: Colors.white),
             )
           ],
         ),
