@@ -3,7 +3,6 @@ import 'package:cc/Controllers/image_controller.dart';
 import 'package:cc/Controllers/run_model.dart';
 import 'package:cc/Controllers/sign_in_controller.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_sound/public/flutter_sound_player.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
@@ -32,76 +31,108 @@ class HomePage extends StatelessWidget {
         ],
       ),
       body: SingleChildScrollView(
-        child: Center(
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(5),
-                child: Container(
-                  alignment: Alignment.center,
-                  child: Obx(
-                    () => Image.network(
-                      imageController.postPic.value,
-                      fit: BoxFit.fill,
-                    ),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(5),
+              child: Container(
+                alignment: Alignment.center,
+                child: Obx(
+                  () => Image.network(
+                    imageController.postPic.value,
+                    fit: BoxFit.fill,
                   ),
                 ),
               ),
-              TextButton.icon(
-                  style: TextButton.styleFrom(iconColor: Colors.black),
-                  label: const Text(
-                    'add image',
-                    style: TextStyle(color: Colors.black),
-                  ),
-                  onPressed: () async {
-                    await imageController.postPicture();
-                  },
-                  icon: const Icon(Icons.add_a_photo)),
-              TextButton.icon(
-                  style: TextButton.styleFrom(iconColor: Colors.black),
-                  label: const Text('add audio',
-                      style: TextStyle(color: Colors.black)),
-                  onPressed: () async {
-                    await audioController.uploadAudio();
-                  },
-                  icon: const Icon(Icons.audio_file)),
-              TextButton.icon(
-                  style: TextButton.styleFrom(iconColor: Colors.black),
-                  label: const Text('Play audio',
-                      style: TextStyle(color: Colors.black)),
-                  onPressed: () async {
-                    if (audioController.downloadUrl.value != '') {
-                      loading();
-                      FlutterSoundPlayer player = FlutterSoundPlayer();
-                      await player.openPlayer();
-                      await player.startPlayer(
-                          fromURI: audioController.downloadUrl.value);
-                      Get.close(1);
-                    } else {
-                      Fluttertoast.showToast(msg: 'No audio');
-                    }
-                  },
-                  icon: const Icon(Icons.play_arrow)),
-              Padding(
-                padding: const EdgeInsets.only(left: 5, right: 5, bottom: 5),
-                child: SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  child: TextButton(
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Obx(() => imageController.isLoading.value
+                    ? Padding(
+                        padding: const EdgeInsets.only(left: 5.0),
+                        child: SizedBox(
+                            width: MediaQuery.of(context).size.width / 3,
+                            child: const Center(
+                                child: LinearProgressIndicator(
+                              color: Colors.black,
+                            ))),
+                      )
+                    : TextButton.icon(
+                        style: TextButton.styleFrom(iconColor: Colors.black),
+                        label: const Text(
+                          'add image',
+                          style: TextStyle(color: Colors.black),
+                        ),
+                        onPressed: () async {
+                          await imageController.postPicture();
+                        },
+                        icon: const Icon(Icons.add_a_photo))),
+                Obx(() => audioController.isLoading.value
+                    ? SizedBox(
+                        width: MediaQuery.of(context).size.width / 3,
+                        child: const Center(
+                            child: LinearProgressIndicator(
+                          color: Colors.black,
+                        )))
+                    : TextButton.icon(
+                        style: TextButton.styleFrom(iconColor: Colors.black),
+                        label: const Text('add audio',
+                            style: TextStyle(color: Colors.black)),
+                        onPressed: () async {
+                          await audioController.uploadAudio();
+                        },
+                        icon: const Icon(Icons.audio_file))),
+                Obx(() => audioController.isPlay.value
+                    ? Padding(
+                        padding: const EdgeInsets.only(right: 5.0),
+                        child: SizedBox(
+                            width: MediaQuery.of(context).size.width / 3,
+                            child: const Center(
+                                child: LinearProgressIndicator(
+                              color: Colors.black,
+                            ))),
+                      )
+                    : TextButton.icon(
+                        style: TextButton.styleFrom(iconColor: Colors.black),
+                        label: const Text('Play audio',
+                            style: TextStyle(color: Colors.black)),
+                        onPressed: () async {
+                          await audioController.playAudio();
+                        },
+                        icon: const Icon(Icons.play_arrow))),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 5, right: 5, bottom: 5),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                child: Obx(
+                  () => TextButton(
                       style: TextButton.styleFrom(
                         backgroundColor: Colors.grey,
                       ),
                       onPressed: () {
-                        loading();
-                        runModel.generateVideo(imageController.postPic.value,
-                            audioController.downloadUrl.value);
-                        Get.close(1);
+                        if (audioController.downloadUrl.value != '' &&
+                            imageController.postPic.value != '') {
+                          runModel.isLoading.value == false
+                              ? runModel.generateVideo(
+                                  imageController.postPic.value,
+                                  audioController.downloadUrl.value)
+                              : null;
+                        } else {
+                          Fluttertoast.showToast(msg: 'Please add audio also');
+                        }
                       },
-                      child: const Text('generate',
-                          style: TextStyle(color: Colors.black))),
+                      child: Text(
+                          runModel.isLoading.value
+                              ? 'generating... please wait!'
+                              : 'generate',
+                          style: const TextStyle(color: Colors.black))),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

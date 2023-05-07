@@ -1,4 +1,3 @@
-import 'package:cc/Controllers/image_controller.dart';
 import 'package:cc/Views/homepage.dart';
 import 'package:cc/Views/sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -8,9 +7,10 @@ import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class SignInController extends GetxController {
+  var isLoading = false.obs;
   Future<void> handleSignIn() async {
-    loading();
     try {
+      isLoading.value = true;
       // decide the scope
       GoogleSignIn googleSignIn = GoogleSignIn(
         scopes: [
@@ -36,26 +36,24 @@ class SignInController extends GetxController {
         //use credential to sign in to firebase
         final UserCredential googleUserCredential =
             await FirebaseAuth.instance.signInWithCredential(credential);
-        Get.close(1);
         Get.off(() => const HomePage());
         debugPrint(googleUserCredential.user!.email.toString());
         Fluttertoast.showToast(msg: "You're Logged in");
       }
+      isLoading.value = false;
     } catch (error) {
       Fluttertoast.showToast(msg: error.toString());
-      Get.close(1);
+      isLoading.value = false;
     }
   }
 
   Future<void> logOut() async {
-    loading();
     try {
+      const CircularProgressIndicator();
       await FirebaseAuth.instance.signOut();
-      Get.close(1);
       Fluttertoast.showToast(msg: 'You"re Logged out!');
-      Get.off(() => const SignIn());
+      Get.offAll(() => const SignIn());
     } catch (e) {
-      Get.close(1);
       Fluttertoast.showToast(msg: 'Something went wrong');
     }
   }

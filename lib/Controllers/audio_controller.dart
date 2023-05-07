@@ -1,6 +1,6 @@
 import 'dart:io';
-import 'package:cc/Controllers/image_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_sound/public/flutter_sound_player.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
@@ -9,9 +9,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 class AudioController extends GetxController {
   final fileName = ''.obs;
   final downloadUrl = ''.obs;
-
+  var isLoading = false.obs;
   Future<void> uploadAudio() async {
-    loading();
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.audio,
       allowMultiple: false,
@@ -24,6 +23,7 @@ class AudioController extends GetxController {
       final FirebaseStorage storage = FirebaseStorage.instance;
 
       try {
+        isLoading.value = true;
         // Step 1: Upload the audio file to Firebase Storage
         Reference ref = storage.ref().child('audio');
 
@@ -36,10 +36,24 @@ class AudioController extends GetxController {
         downloadUrl.value = await taskSnapshot.ref.getDownloadURL();
 
         debugPrint('Download URL: $downloadUrl');
+        isLoading.value = false;
       } catch (error) {
+        isLoading.value = false;
         debugPrint('Error: $error');
       }
     }
-    Get.close(1);
+  }
+
+  var isPlay = false.obs;
+  playAudio() async {
+    if (downloadUrl.value != '') {
+      isPlay.value = true;
+      FlutterSoundPlayer player = FlutterSoundPlayer();
+      await player.openPlayer();
+      await player.startPlayer(fromURI: downloadUrl.value);
+      isPlay.value = false;
+    } else {
+      Fluttertoast.showToast(msg: 'No audio');
+    }
   }
 }

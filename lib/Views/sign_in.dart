@@ -28,9 +28,9 @@ class SignIn extends StatelessWidget {
               child: Image.asset('assets/google.png'),
             ),
             const SizedBox(height: 10),
-            const Text(
-              'Log In',
-            )
+            Obx(() => Text(
+                  signInController.isLoading.value ? 'working...' : 'Log In',
+                ))
           ],
         ),
       )),
