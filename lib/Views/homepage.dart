@@ -1,6 +1,6 @@
 import 'package:cc/Controllers/audio_controller.dart';
 import 'package:cc/Controllers/image_controller.dart';
-import 'package:cc/Controllers/run_model.dart';
+import 'package:cc/Controllers/video_controller.dart';
 import 'package:cc/Controllers/sign_in_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -14,7 +14,7 @@ class HomePage extends StatelessWidget {
     ImageController imageController = Get.put(ImageController());
     AudioController audioController = Get.put(AudioController());
     SignInController signInController = Get.put(SignInController());
-    RunModel runModel = Get.put(RunModel());
+    VideoController runModel = Get.put(VideoController());
     return Scaffold(
       appBar: AppBar(
         title: const Text('SMCC'),
@@ -50,9 +50,9 @@ class HomePage extends StatelessWidget {
               children: [
                 Obx(() => imageController.isLoading.value
                     ? Padding(
-                        padding: const EdgeInsets.only(left: 5.0),
+                        padding: const EdgeInsets.only(left: 25.0),
                         child: SizedBox(
-                            width: MediaQuery.of(context).size.width / 3,
+                            width: MediaQuery.of(context).size.width / 5,
                             child: const Center(
                                 child: LinearProgressIndicator(
                               color: Colors.black,
@@ -70,7 +70,7 @@ class HomePage extends StatelessWidget {
                         icon: const Icon(Icons.add_a_photo))),
                 Obx(() => audioController.isLoading.value
                     ? SizedBox(
-                        width: MediaQuery.of(context).size.width / 3,
+                        width: MediaQuery.of(context).size.width / 5,
                         child: const Center(
                             child: LinearProgressIndicator(
                           color: Colors.black,
@@ -85,9 +85,9 @@ class HomePage extends StatelessWidget {
                         icon: const Icon(Icons.audio_file))),
                 Obx(() => audioController.isPlay.value
                     ? Padding(
-                        padding: const EdgeInsets.only(right: 5.0),
+                        padding: const EdgeInsets.only(right: 25.0),
                         child: SizedBox(
-                            width: MediaQuery.of(context).size.width / 3,
+                            width: MediaQuery.of(context).size.width / 5,
                             child: const Center(
                                 child: LinearProgressIndicator(
                               color: Colors.black,

@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:cc/Views/video_player.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
-class RunModel extends GetxController {
+class VideoController extends GetxController {
   var isLoading = false.obs;
   void generateVideo(imagePath, audioPath) async {
     try {
@@ -43,13 +45,32 @@ class RunModel extends GetxController {
         // ignore: unused_local_variable
         var parsedResponse = jsonDecode(responseData);
         Fluttertoast.showToast(msg: 'Video generated successfully.');
+        isLoading.value = false;
+        Get.to(() => const PlayVideo());
       } else {
         Fluttertoast.showToast(msg: 'Failed to generate video.');
+        isLoading.value = false;
       }
-      isLoading.value = false;
     } catch (e) {
       Fluttertoast.showToast(msg: 'Failed to generate video.');
       isLoading.value = false;
+    }
+  }
+
+  var isDownloading = false.obs;
+  Future<void> downloadVideo() async {
+    try {
+      isDownloading.value = true;
+      final response =
+          await http.get(Uri.parse('http://192.168.43.201:5000/get_video'));
+      final directory = await getExternalStorageDirectory();
+      final file = File('${directory!.path}/output.mp4');
+      await file.writeAsBytes(response.bodyBytes);
+      Fluttertoast.showToast(msg: 'Video downloaded to: ${file.path}');
+      isDownloading.value = false;
+    } catch (e) {
+      Fluttertoast.showToast(msg: e.toString());
+      isDownloading.value = false;
     }
   }
 }
