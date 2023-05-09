@@ -4,17 +4,18 @@ import 'package:cc/Views/video_player.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+// ignore: depend_on_referenced_packages
 import 'package:path_provider/path_provider.dart';
 
 class VideoController extends GetxController {
   var isLoading = false.obs;
-  void generateVideo(imagePath, audioPath) async {
+  void generateVideo(imagePath, audioPath, pads) async {
     try {
       isLoading.value = true;
-      var imageUrl = imagePath; // Replace with actual image URL
-      var audioUrl = audioPath; // Replace with actual audio URL
-      // var padding = pads; // Or any other value you want to use for padding
-
+      var imageUrl = imagePath;
+      var audioUrl = audioPath;
+      List padding = pads;
+      String paddingJson = jsonEncode(padding);
       // Download image and audio files from network
       var imageResponse = await http.get(Uri.parse(imageUrl));
       var audioResponse = await http.get(Uri.parse(audioUrl));
@@ -37,6 +38,7 @@ class VideoController extends GetxController {
       request.headers['Content-Type'] = 'multipart/form-data';
       request.files.add(image);
       request.files.add(audio);
+      request.fields['padding'] = paddingJson;
 
       // Send request and handle response
       var response = await request.send();

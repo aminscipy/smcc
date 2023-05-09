@@ -2,7 +2,9 @@ import 'package:cc/Controllers/audio_controller.dart';
 import 'package:cc/Controllers/image_controller.dart';
 import 'package:cc/Controllers/video_controller.dart';
 import 'package:cc/Controllers/sign_in_controller.dart';
+import 'package:cc/Views/video_player.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
@@ -15,6 +17,7 @@ class HomePage extends StatelessWidget {
     AudioController audioController = Get.put(AudioController());
     SignInController signInController = Get.put(SignInController());
     VideoController runModel = Get.put(VideoController());
+    List padding = [0, 0, 0, 0];
     return Scaffold(
       appBar: AppBar(
         title: const Text('SMCC'),
@@ -23,8 +26,14 @@ class HomePage extends StatelessWidget {
             return [
               PopupMenuItem(
                   child: const Text('Log Out'),
+                  onTap: () async {
+                    await signInController.logOut();
+                  }),
+              PopupMenuItem(
+                  child: const Text('Video Player'),
                   onTap: () {
-                    signInController.logOut();
+                    Future.delayed(const Duration(seconds: 0))
+                        .then((value) => Get.to(() => const PlayVideo()));
                   })
             ];
           })
@@ -104,6 +113,30 @@ class HomePage extends StatelessWidget {
               ],
             ),
             Padding(
+              padding: const EdgeInsets.only(left: 5, right: 5),
+              child: Row(
+                children: [
+                  Flexible(
+                      child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.grey[200],
+                    ),
+                    child: TextField(
+                      onChanged: (value) {
+                        padding = value.split(',');
+                      },
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Add padding - 4 values',
+                        contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                      ),
+                    ),
+                  ))
+                ],
+              ),
+            ),
+            Padding(
               padding: const EdgeInsets.only(left: 5, right: 5, bottom: 5),
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
@@ -113,12 +146,14 @@ class HomePage extends StatelessWidget {
                         backgroundColor: Colors.grey,
                       ),
                       onPressed: () {
+                        SystemChannels.textInput.invokeMethod('TextInput.hide');
                         if (audioController.downloadUrl.value != '' &&
                             imageController.postPic.value != '') {
                           runModel.isLoading.value == false
                               ? runModel.generateVideo(
                                   imageController.postPic.value,
-                                  audioController.downloadUrl.value)
+                                  audioController.downloadUrl.value,
+                                  padding)
                               : null;
                         } else {
                           Fluttertoast.showToast(msg: 'Please add audio also');

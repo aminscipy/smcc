@@ -22,9 +22,15 @@ class PlayVideo extends StatelessWidget {
               if (snapshot.connectionState == ConnectionState.done) {
                 return Column(
                   children: [
-                    AspectRatio(
-                      aspectRatio: controller.value.aspectRatio,
-                      child: VideoPlayer(controller),
+                    Padding(
+                      padding: const EdgeInsets.all(5.0),
+                      child: AspectRatio(
+                        aspectRatio: controller.value.aspectRatio,
+                        child: VideoPlayer(controller),
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 15,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -33,7 +39,10 @@ class PlayVideo extends StatelessWidget {
                             onPressed: () async {
                               await controller.play();
                             },
-                            icon: const Icon(Icons.play_arrow)),
+                            icon: const Icon(
+                              Icons.play_arrow,
+                              size: 40,
+                            )),
                         Obx(() => videoController.isDownloading.value
                             ? Padding(
                                 padding: const EdgeInsets.only(right: 25.0),
@@ -48,15 +57,22 @@ class PlayVideo extends StatelessWidget {
                             : TextButton.icon(
                                 style: TextButton.styleFrom(
                                     iconColor: Colors.black),
-                                label: const Text('Download',
+                                label: const Text('',
                                     style: TextStyle(color: Colors.black)),
                                 onPressed: () async {
                                   await videoController.downloadVideo();
                                 },
-                                icon: const Icon(Icons.download)))
+                                icon: const Icon(
+                                  Icons.download,
+                                  size: 38,
+                                )))
                       ],
                     )
                   ],
+                );
+              } else if (!snapshot.hasData) {
+                return const Center(
+                  child: Text('No Video to show'),
                 );
               } else {
                 return const Center(child: CircularProgressIndicator());
