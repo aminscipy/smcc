@@ -8,9 +8,18 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+String gender = 'Female';
+String language = 'English';
+String text = '';
+
+class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     ImageController imageController = Get.put(ImageController());
@@ -18,6 +27,7 @@ class HomePage extends StatelessWidget {
     SignInController signInController = Get.put(SignInController());
     VideoController runModel = Get.put(VideoController());
     List padding = [0, 0, 0, 0];
+    // List of items in our dropdown menu
     return Scaffold(
       appBar: AppBar(
         title: const Text('SMCC'),
@@ -25,16 +35,16 @@ class HomePage extends StatelessWidget {
           PopupMenuButton(itemBuilder: (context) {
             return [
               PopupMenuItem(
-                  child: const Text('Log Out'),
-                  onTap: () async {
-                    await signInController.logOut();
-                  }),
-              PopupMenuItem(
                   child: const Text('Video Player'),
                   onTap: () {
                     Future.delayed(const Duration(seconds: 0))
                         .then((value) => Get.to(() => const PlayVideo()));
-                  })
+                  }),
+              PopupMenuItem(
+                  child: const Text('Log Out'),
+                  onTap: () async {
+                    await signInController.logOut();
+                  }),
             ];
           })
         ],
@@ -92,7 +102,7 @@ class HomePage extends StatelessWidget {
                           await audioController.uploadAudio();
                         },
                         icon: const Icon(Icons.audio_file))),
-                Obx(() => audioController.isPlay.value
+                Obx(() => audioController.isPlaying.value
                     ? Padding(
                         padding: const EdgeInsets.only(right: 25.0),
                         child: SizedBox(
@@ -113,7 +123,7 @@ class HomePage extends StatelessWidget {
               ],
             ),
             Padding(
-              padding: const EdgeInsets.only(left: 5, right: 5),
+              padding: const EdgeInsets.all(5),
               child: Row(
                 children: [
                   Flexible(
@@ -138,6 +148,96 @@ class HomePage extends StatelessWidget {
             ),
             Padding(
               padding: const EdgeInsets.only(left: 5, right: 5, bottom: 5),
+              child: Row(
+                children: [
+                  Flexible(
+                      child: Container(
+                    height: 110,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.grey[200],
+                    ),
+                    child: TextField(
+                      onChanged: (value) {
+                        text = value;
+                      },
+                      decoration: const InputDecoration(
+                        border: InputBorder.none,
+                        hintText: 'Text to Audio',
+                        contentPadding: EdgeInsets.symmetric(horizontal: 10),
+                      ),
+                    ),
+                  ))
+                ],
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                DropdownButton(
+                  value: gender,
+                  items: const [
+                    DropdownMenuItem(value: 'Male', child: Text('Male')),
+                    DropdownMenuItem(value: 'Female', child: Text('Female'))
+                  ],
+                  onChanged: (newValue) {
+                    SystemChannels.textInput.invokeMethod('TextInput.hide');
+                    setState(() {
+                      gender = newValue!;
+                    });
+                  },
+                  underline: Container(
+                    height: 0,
+                    color: Colors.transparent,
+                  ),
+                ),
+                DropdownButton(
+                  value: language,
+                  items: const [
+                    DropdownMenuItem(value: 'English', child: Text('English')),
+                    DropdownMenuItem(value: 'Hindi', child: Text('Hindi')),
+                  ],
+                  onChanged: (newValue) {
+                    SystemChannels.textInput.invokeMethod('TextInput.hide');
+                    setState(() {
+                      language = newValue!;
+                    });
+                  },
+                  underline: Container(
+                    height: 0,
+                    color: Colors.transparent,
+                  ),
+                ),
+                Obx(() => audioController.isLoading.value
+                    ? SizedBox(
+                        width: MediaQuery.of(context).size.width / 5,
+                        child: const Center(
+                            child: LinearProgressIndicator(
+                          color: Colors.black,
+                        )))
+                    : TextButton.icon(
+                        onPressed: () async {
+                          SystemChannels.textInput
+                              .invokeMethod('TextInput.hide');
+                          if (text != '') {
+                            await audioController.textToAudio(
+                                gender, text, language);
+                          } else {
+                            Fluttertoast.showToast(msg: 'Add text first');
+                          }
+                        },
+                        icon: const Icon(
+                          Icons.run_circle,
+                          color: Colors.black,
+                        ),
+                        label: const Text(
+                          'Convert',
+                          style: TextStyle(color: Colors.black),
+                        )))
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.only(left: 5, right: 5, bottom: 5),
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
                 child: Obx(
@@ -156,7 +256,7 @@ class HomePage extends StatelessWidget {
                                   padding)
                               : null;
                         } else {
-                          Fluttertoast.showToast(msg: 'Please add audio also');
+                          Fluttertoast.showToast(msg: 'Please add audio');
                         }
                       },
                       child: Text(
