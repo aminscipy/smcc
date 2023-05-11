@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
+import 'package:googleapis/texttospeech/v1.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -15,7 +16,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-String gender = 'Male';
+String gender = 'Female';
 String language = 'English';
 String text = '';
 
@@ -50,6 +51,8 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: SingleChildScrollView(
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
         child: Column(
           children: [
             Padding(
@@ -57,9 +60,10 @@ class _HomePageState extends State<HomePage> {
               child: Container(
                 alignment: Alignment.center,
                 child: Obx(
-                  () => Image.network(
-                    imageController.postPic.value,
-                    fit: BoxFit.fill,
+                  () => FadeInImage(
+                    placeholder: const AssetImage('assets/monalisa.jpg'),
+                    image: NetworkImage(imageController.postPic.value),
+                    fit: BoxFit.cover,
                   ),
                 ),
               ),
@@ -223,7 +227,7 @@ class _HomePageState extends State<HomePage> {
                               .invokeMethod('TextInput.hide');
                           if (text != '') {
                             await audioController.textToAudio(
-                                gender, text, language);
+                                text, language, gender);
                           } else {
                             Fluttertoast.showToast(msg: 'Add text first');
                           }

@@ -77,7 +77,7 @@ class AudioController extends GetxController {
 
   var isConverting = false.obs;
   FlutterTts flutterTts = FlutterTts();
-  textToAudio(gender, text, language) async {
+  textToAudio(text, language, gender) async {
     try {
       isConverting.value = true;
       final String serviceAccountJson =
@@ -89,35 +89,44 @@ class AudioController extends GetxController {
           credentials, [TexttospeechApi.cloudPlatformScope]);
       final textToSpeechApi = TexttospeechApi(client);
       final synthesisInput = SynthesisInput(text: text);
-      final voiceSelectionParams = VoiceSelectionParams(
-          languageCode: language == 'English'
-              ? 'en-US'
-              : language == 'Hindi'
-                  ? 'hi-IN'
-                  : language == 'Marathi'
-                      ? 'mr-IN'
-                      : 'pa-Guru-IN',
-          ssmlGender: gender);
       final audioConfig = AudioConfig(audioEncoding: 'MP3');
       final request = SynthesizeSpeechRequest(
         input: synthesisInput,
-        voice: voiceSelectionParams,
+        voice: VoiceSelectionParams(
+            languageCode: language == 'English'
+                ? 'en-US'
+                : language == 'Marathi'
+                    ? 'mr-IN'
+                    : language == 'Hindi'
+                        ? 'hi-IN'
+                        : 'pa-IN',
+            name: gender == "Male" && language == 'English'
+                ? 'en-US-Wavenet-B'
+                : gender == "Female" && language == 'English'
+                    ? 'en-US-Wavenet-C'
+                    : gender == "Male" && language == 'Hindi'
+                        ? 'hi-IN-Wavenet-B'
+                        : gender == "Female" && language == 'Hindi'
+                            ? 'hi-IN-Wavenet-A'
+                            : gender == "Male" && language == 'Marathi'
+                                ? 'mr-IN-Wavenet-B'
+                                : gender == "Female" && language == 'Marathi'
+                                    ? 'mr-IN-Wavenet-A'
+                                    : gender == "Male" && language == 'Punjabi'
+                                        ? 'pa-IN-Wavenet-B'
+                                        : 'pa-IN-Wavenet-A'),
         audioConfig: audioConfig,
       );
       final response = await textToSpeechApi.text.synthesize(request);
       final directory = await getApplicationDocumentsDirectory();
       final path = directory.path;
       final outputFile = File('$path/audio.mp3');
-      audio.value =
-          '$path/audio.mp3'; // Replace with your desired directory and file name
+      audio.value = '$path/audio.mp3';
       await outputFile.writeAsBytes(response.audioContentAsBytes);
       try {
         // Step 1: Upload the audio file to Firebase Storage
         Reference ref = storage.ref().child('audio');
-        final metadata = SettableMetadata(
-            contentType: 'audio/mp3',
-            contentEncoding: 'compress',
-            contentDisposition: 'inline');
+        final metadata = SettableMetadata(contentType: 'audio/mp3');
         UploadTask uploadTask = ref.putFile(outputFile, metadata);
         TaskSnapshot taskSnapshot = await uploadTask;
         Fluttertoast.showToast(msg: 'converted and uploaded successfully!');
