@@ -15,7 +15,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-String gender = 'Female';
+String gender = 'Male';
 String language = 'English';
 String text = '';
 
@@ -196,6 +196,8 @@ class _HomePageState extends State<HomePage> {
                   items: const [
                     DropdownMenuItem(value: 'English', child: Text('English')),
                     DropdownMenuItem(value: 'Hindi', child: Text('Hindi')),
+                    DropdownMenuItem(value: 'Marathi', child: Text('Marathi')),
+                    DropdownMenuItem(value: 'Punjabi', child: Text('Punjabi')),
                   ],
                   onChanged: (newValue) {
                     SystemChannels.textInput.invokeMethod('TextInput.hide');
@@ -208,7 +210,7 @@ class _HomePageState extends State<HomePage> {
                     color: Colors.transparent,
                   ),
                 ),
-                Obx(() => audioController.isLoading.value
+                Obx(() => audioController.isConverting.value
                     ? SizedBox(
                         width: MediaQuery.of(context).size.width / 5,
                         child: const Center(

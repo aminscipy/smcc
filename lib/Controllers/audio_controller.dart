@@ -1,16 +1,23 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:flutter_sound/public/flutter_sound_player.dart';
+import 'package:flutter_sound/flutter_sound.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:googleapis/texttospeech/v1.dart';
+import 'package:googleapis_auth/auth_io.dart';
+import 'package:flutter/services.dart' show rootBundle;
+// ignore: depend_on_referenced_packages
+import 'package:path_provider/path_provider.dart';
 
 class AudioController extends GetxController {
   final fileName = ''.obs;
   final downloadUrl = ''.obs;
   var isLoading = false.obs;
+  var audio = ''.obs;
   final FirebaseStorage storage = FirebaseStorage.instance;
   Future<void> uploadAudio() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
@@ -51,63 +58,80 @@ class AudioController extends GetxController {
         isPlaying.value = true;
         FlutterSoundPlayer player = FlutterSoundPlayer();
         await player.openPlayer();
-        await player.startPlayer(fromURI: downloadUrl.value);
-        isPlaying.value = false;
+        await player.startPlayer(
+          fromURI: downloadUrl.value,
+          whenFinished: () async {
+            await player.closePlayer();
+            isPlaying.value = false;
+          },
+        );
       } else {
         Fluttertoast.showToast(msg: 'No audio');
         isPlaying.value = false;
       }
     } catch (e) {
       isPlaying.value = false;
-      Fluttertoast.showToast(msg: 'Somethin went wrong, please upload again');
+      Fluttertoast.showToast(msg: e.toString());
     }
   }
 
+  var isConverting = false.obs;
   FlutterTts flutterTts = FlutterTts();
-  var hindiFemale = {"name": "hi-in-x-cfn#female_1-local", "locale": "hi-IN"};
-  var hindiMale = {"name": "hi-in-x-cfn#male_2-local", "locale": "hi-IN"};
-  var englishMale = {"name": "en-us-x-sfg#male_3-local", "locale": "en-US"};
-  var englishFemale = {"name": "en-us-x-sfg#female_2-local", "locale": "en-US"};
-
   textToAudio(gender, text, language) async {
     try {
-      await flutterTts
-          .setVoice(gender == 'Male' && language == 'English'
-              ? englishMale
-              : gender == 'Female' && language == 'English'
-                  ? englishFemale
-                  : gender == 'Female' && language == 'Hindi'
-                      ? hindiFemale
-                      : hindiMale)
-          .then((value) => flutterTts.synthesizeToFile(
-                text,
-                Platform.isAndroid ? "audio.wav" : "audio.caf",
-              ));
-
-      print(language + gender);
-      File audioFile =
-          File('/storage/emulated/0/Android/data/com.cc.smcc/files/audio.wav');
+      isConverting.value = true;
+      final String serviceAccountJson =
+          await rootBundle.loadString('assets/service-key.json');
+      final Map<String, dynamic> serviceAccountMap =
+          json.decode(serviceAccountJson);
+      final credentials = ServiceAccountCredentials.fromJson(serviceAccountMap);
+      final client = await clientViaServiceAccount(
+          credentials, [TexttospeechApi.cloudPlatformScope]);
+      final textToSpeechApi = TexttospeechApi(client);
+      final synthesisInput = SynthesisInput(text: text);
+      final voiceSelectionParams = VoiceSelectionParams(
+          languageCode: language == 'English'
+              ? 'en-US'
+              : language == 'Hindi'
+                  ? 'hi-IN'
+                  : language == 'Marathi'
+                      ? 'mr-IN'
+                      : 'pa-Guru-IN',
+          ssmlGender: gender);
+      final audioConfig = AudioConfig(audioEncoding: 'MP3');
+      final request = SynthesizeSpeechRequest(
+        input: synthesisInput,
+        voice: voiceSelectionParams,
+        audioConfig: audioConfig,
+      );
+      final response = await textToSpeechApi.text.synthesize(request);
+      final directory = await getApplicationDocumentsDirectory();
+      final path = directory.path;
+      final outputFile = File('$path/audio.mp3');
+      audio.value =
+          '$path/audio.mp3'; // Replace with your desired directory and file name
+      await outputFile.writeAsBytes(response.audioContentAsBytes);
       try {
-        isLoading.value = true;
         // Step 1: Upload the audio file to Firebase Storage
         Reference ref = storage.ref().child('audio');
-
-        UploadTask uploadTask = ref.putFile(audioFile);
+        final metadata = SettableMetadata(
+            contentType: 'audio/mp3',
+            contentEncoding: 'compress',
+            contentDisposition: 'inline');
+        UploadTask uploadTask = ref.putFile(outputFile, metadata);
         TaskSnapshot taskSnapshot = await uploadTask;
-
         Fluttertoast.showToast(msg: 'converted and uploaded successfully!');
-
         // Step 2: Get the download URL of the audio file
         downloadUrl.value = await taskSnapshot.ref.getDownloadURL();
-
         debugPrint('Download URL: $downloadUrl');
-        isLoading.value = false;
+        isConverting.value = false;
       } catch (error) {
-        isLoading.value = false;
+        isConverting.value = false;
         debugPrint('Error: $error');
       }
     } catch (e) {
-      Fluttertoast.showToast(msg: 'Something went wrong, please upload again');
+      Fluttertoast.showToast(msg: e.toString());
+      isConverting.value = false;
     }
   }
 }
