@@ -33,7 +33,7 @@ class VideoController extends GetxController {
 
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('http://192.168.43.201:5000/generate-video'),
+        Uri.parse('endpoint/generate-video'),
       );
       request.headers['Content-Type'] = 'multipart/form-data';
       request.files.add(image);
@@ -63,8 +63,7 @@ class VideoController extends GetxController {
   Future<void> downloadVideo() async {
     try {
       isDownloading.value = true;
-      final response =
-          await http.get(Uri.parse('http://192.168.43.201:5000/get_video'));
+      final response = await http.get(Uri.parse('endpoint/get_video'));
       final directory = await getExternalStorageDirectory();
       final file = File('${directory!.path}/output.mp4');
       await file.writeAsBytes(response.bodyBytes);

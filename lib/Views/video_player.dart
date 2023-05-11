@@ -10,7 +10,7 @@ class PlayVideo extends StatelessWidget {
   Widget build(BuildContext context) {
     VideoController videoController = Get.find<VideoController>();
     VideoPlayerController controller =
-        VideoPlayerController.network('http://192.168.43.201:5000/video');
+        VideoPlayerController.network('endpoint/video');
     Future initialize = controller.initialize();
     return Scaffold(
         appBar: AppBar(
