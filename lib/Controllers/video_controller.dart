@@ -7,6 +7,8 @@ import 'package:http/http.dart' as http;
 // ignore: depend_on_referenced_packages
 import 'package:path_provider/path_provider.dart';
 
+import '../constants.dart';
+
 class VideoController extends GetxController {
   var isLoading = false.obs;
   void generateVideo(imagePath, audioPath, pads) async {
@@ -33,7 +35,7 @@ class VideoController extends GetxController {
 
       var request = http.MultipartRequest(
         'POST',
-        Uri.parse('endpoint/generate-video'),
+        Uri.parse('$endpoint/generate-video'),
       );
       request.headers['Content-Type'] = 'multipart/form-data';
       request.files.add(image);
@@ -54,7 +56,7 @@ class VideoController extends GetxController {
         isLoading.value = false;
       }
     } catch (e) {
-      Fluttertoast.showToast(msg: 'Failed to generate video.');
+      Fluttertoast.showToast(msg: e.toString());
       isLoading.value = false;
     }
   }
@@ -63,7 +65,7 @@ class VideoController extends GetxController {
   Future<void> downloadVideo() async {
     try {
       isDownloading.value = true;
-      final response = await http.get(Uri.parse('endpoint/get_video'));
+      final response = await http.get(Uri.parse('$endpoint/get_video'));
       final directory = await getExternalStorageDirectory();
       final file = File('${directory!.path}/output.mp4');
       await file.writeAsBytes(response.bodyBytes);

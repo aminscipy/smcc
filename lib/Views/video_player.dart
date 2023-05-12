@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
+import '../constants.dart';
+
 class PlayVideo extends StatelessWidget {
   const PlayVideo({super.key});
 
@@ -10,7 +12,7 @@ class PlayVideo extends StatelessWidget {
   Widget build(BuildContext context) {
     VideoController videoController = Get.find<VideoController>();
     VideoPlayerController controller =
-        VideoPlayerController.network('endpoint/video');
+        VideoPlayerController.network('$endpoint/video');
     Future initialize = controller.initialize();
     return Scaffold(
         appBar: AppBar(
