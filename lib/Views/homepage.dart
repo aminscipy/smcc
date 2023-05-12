@@ -58,13 +58,9 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(5),
               child: Container(
                 alignment: Alignment.center,
-                child: Obx(
-                  () => FadeInImage(
-                    placeholder: const AssetImage('assets/monalisa.jpg'),
-                    image: NetworkImage(imageController.postPic.value),
-                    fit: BoxFit.cover,
-                  ),
-                ),
+                child: Obx(() => imageController.postPic.value == ''
+                    ? Image.asset('assets/monalisa.jpg')
+                    : Image.network(imageController.postPic.value)),
               ),
             ),
             Row(
@@ -245,31 +241,34 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.only(left: 5, right: 5, bottom: 5),
               child: SizedBox(
                 width: MediaQuery.of(context).size.width,
-                child: Obx(
-                  () => TextButton(
-                      style: TextButton.styleFrom(
-                        backgroundColor: Colors.grey,
-                      ),
-                      onPressed: () {
-                        SystemChannels.textInput.invokeMethod('TextInput.hide');
-                        if (audioController.downloadUrl.value != '' &&
-                            imageController.postPic.value != '') {
-                          runModel.isLoading.value == false
-                              ? runModel.generateVideo(
-                                  imageController.postPic.value,
-                                  audioController.downloadUrl.value,
-                                  padding)
-                              : null;
-                        } else {
-                          Fluttertoast.showToast(msg: 'Please add audio');
-                        }
-                      },
-                      child: Text(
-                          runModel.isLoading.value
-                              ? 'generating... please wait!'
-                              : 'generate',
-                          style: const TextStyle(color: Colors.black))),
-                ),
+                child: Obx(() => TextButton(
+                    style: TextButton.styleFrom(
+                      backgroundColor: Colors.grey,
+                    ),
+                    onPressed: () {
+                      SystemChannels.textInput.invokeMethod('TextInput.hide');
+                      if (audioController.downloadUrl.value != '' &&
+                          imageController.postPic.value != '') {
+                        runModel.isLoading.value == false
+                            ? runModel.generateVideo(
+                                imageController.postPic.value,
+                                audioController.downloadUrl.value,
+                                padding)
+                            : null;
+                      } else {
+                        Fluttertoast.showToast(
+                            msg: 'Please add image and audio');
+                      }
+                    },
+                    child: runModel.isLoading.value
+                        ? SizedBox(
+                            width: MediaQuery.of(context).size.width / 5,
+                            child: const Center(
+                                child: LinearProgressIndicator(
+                              color: Colors.black,
+                            )))
+                        : const Text('generate',
+                            style: TextStyle(color: Colors.black)))),
               ),
             ),
           ],
