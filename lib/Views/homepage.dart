@@ -58,9 +58,12 @@ class _HomePageState extends State<HomePage> {
               padding: const EdgeInsets.all(5),
               child: Container(
                 alignment: Alignment.center,
-                child: Obx(() => imageController.postPic.value == ''
-                    ? Image.asset('assets/monalisa.jpg')
-                    : Image.network(imageController.postPic.value)),
+                child: Obx(() => FadeInImage.assetNetwork(
+                      placeholder: 'assets/monalisa.jpg',
+                      image: imageController.postPic.value,
+                      fit: BoxFit.cover,
+                      fadeInDuration: const Duration(milliseconds: 500),
+                    )),
               ),
             ),
             Row(
@@ -145,6 +148,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
+            const SizedBox(height: 4),
             Padding(
               padding: const EdgeInsets.only(left: 5, right: 5, bottom: 5),
               child: Row(
@@ -160,6 +164,8 @@ class _HomePageState extends State<HomePage> {
                       onChanged: (value) {
                         text = value;
                       },
+                      textInputAction: TextInputAction.done,
+                      maxLines: null,
                       decoration: const InputDecoration(
                         border: InputBorder.none,
                         hintText: 'Text to Audio',

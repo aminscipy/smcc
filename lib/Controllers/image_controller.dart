@@ -4,7 +4,9 @@ import 'dart:io' as i;
 import 'package:image_picker/image_picker.dart';
 
 class ImageController extends GetxController {
-  var postPic = ''.obs;
+  var postPic =
+      'https://firebasestorage.googleapis.com/v0/b/cc-smcc.appspot.com/o/monalisa.jpg?alt=media&token=2835037e-da00-4d01-a13d-c00239877aef'
+          .obs;
   var isLoading = false.obs;
   postPicture() async {
     FirebaseStorage storage = FirebaseStorage.instance;
