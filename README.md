@@ -1,4 +1,4 @@
-This is demo app I created, so that I can start applying for flutter jobs. Thank you for taking time to evaluate my profile.
+This is demo app I created, so that I can start applying for flutter jobs. Thank you for taking time to evaluate my profile. Please note, that I don't have any experience with Google cloud or Flask, I just figured it out using chatGPT (part of flutter code also, like multipart requests).
 
 **Stack**
 ------------------------------------------------------------------------------------------------------------
@@ -12,7 +12,7 @@ Storage - Firebase storage
 
 Hosting - Google cloud VM instance
 
-tts - google cloud text to speech API - currently supporting 2 genders, 4 -languages
+Text to Speech - google cloud text to speech API - currently supporting 2 genders, 4 -languages
 
 API - Flask
 
